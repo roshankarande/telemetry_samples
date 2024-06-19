@@ -1,0 +1,20 @@
+version: '3.7'
+services:
+  fastapi-service:
+      build:
+        context: .
+      image: sample-fastapi-app
+      ports:
+        - "5003:5002"
+      environment:
+        - OTEL_RESOURCE_ATTRIBUTES=service.name=fastapi-docker-sample
+        - OTEL_EXPORTER_OTLP_ENDPOINT=http://host.docker.internal:4317
+        - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
+  
+
+# OTEL_RESOURCE_ATTRIBUTES=service.name=fastapiApp OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317 OTEL_EXPORTER_OTLP_PROTOCOL=grpc opentelemetry-instrument uvicorn main:app --host localhost --port 5002
+
+
+# http://localhost:5003/docs

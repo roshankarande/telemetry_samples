@@ -1,0 +1,21 @@
+services:
+  httpd:
+    image: httpd:latest
+    ports:
+      - 8081:80
+  nginx:
+    image: nginx:latest
+    ports:
+      - 8080:80
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+    ports:
+      # - 1888:1888 # pprof extension
+      # - 8888:8888 # Prometheus metrics exposed by the Collector
+      # - 8889:8889 # Prometheus exporter metrics
+      # - 13133:13133 # health_check extension
+      - 4319:4317 # OTLP gRPC receiver
+      - 4320:4318 # OTLP http receiver
+      # - 55679:55679 # zpages extension

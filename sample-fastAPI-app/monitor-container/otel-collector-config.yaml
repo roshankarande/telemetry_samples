@@ -1,0 +1,50 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      # http:
+  docker_stats:
+    # endpoint: unix:///var/run/docker.sock
+    # endpoint: npipe:////./pipe/dockerDesktopLinuxEngine
+    endpoint: npipe:////./pipe/docker_engine
+    collection_interval: 30s
+    timeout: 10s
+    # api_version: 1.24
+    metrics:
+      container.uptime:
+        enabled: true
+      container.restarts:
+        enabled: true
+      container.network.io.usage.rx_errors:
+        enabled: true
+      container.network.io.usage.tx_errors:
+        enabled: true
+      container.network.io.usage.rx_packets:
+        enabled: true
+      container.network.io.usage.tx_packets:
+        enabled: true
+processors:
+  batch:
+    send_batch_size: 1000
+    timeout: 10s
+  resourcedetection:
+    detectors: [env, system]
+    timeout: 2s
+    system:
+      hostname_sources: [os]
+exporters:
+  otlp:
+    endpoint: "http://localhost:4317"
+    # tls:
+    #   insecure: false
+    # headers:
+    #   signoz-access-token: "{signoz-token}"
+  logging:
+    verbosity: normal
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp, docker_stats]
+      processors: [resourcedetection, batch]
+      exporters: [otlp]
